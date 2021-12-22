@@ -4,10 +4,11 @@ import Head from "next/head";
 import { GetStaticProps, GetStaticPaths, GetStaticPropsContext } from "next";
 import path from "path";
 import { tryGetPreviewData } from "next/dist/server/api-utils";
+// SSG + SSR sẽ được gọi lại mỗi khi user gửi request lên server (call API)
 // ISR = SSG + revalidate (trong hàm getStaticProps)
 // cả 3 thằng này: getStaticProps (SSG), getStaticPaths (SSG), getServerSideProps (ISR) khi npm run build đều sẽ tạo ra file .html
 // khi muốn 1 component không render ở phía server, chỉ về client hay chỉ muốn render ở phía trình duyệt (browser) mà thôi thì dùng cách này
-const Test = dynamic(() => import("./test"), {ssr: false})
+const Test = dynamic(() => import("./test"), { ssr: false });
 // những page data cứng dùng: SSG, private page (VD: admin) dùng CSR, những page data dynamic bị thay đổi bởi user thì dùng ISR
 // pre-rendering (VD: SSR (getServerSideProps), SSG (getStaticProps, getStaticPaths)): render sẵn file .html ở phía server -> khi user load lên là mình đã có sẵn file .html để show lên rồi
 // sau đó tải về file javascript và load thêm javascript -> sau đó nó sẽ thực hiện quá trình gọi là: hydration
@@ -31,23 +32,23 @@ const Test = dynamic(() => import("./test"), {ssr: false})
 const ProductDetails = ({ object }) => {
   // const { object } = prop;
   const router = useRouter();
-  if(router.isFallback) {
+  if (router.isFallback) {
     // thay thẻ div này thành component loading
-    return <div>Loading...</div>
+    return <div>Loading...</div>;
   }
   const handleProductDetail = () => {
     router.push(
       {
         pathname: "/products/1",
         query: {
-          page: "data ne"
+          page: "data ne",
         },
       },
       undefined,
       // khi muốn component này chỉ chạy ở phía client thôi, không muốn phải lên server chạy lại các thằng: getStaticProps, getStaticPaths, getServetSideProps nữa thì thêm thằng này vào
-      {shallow: true}
-    )
-  }
+      { shallow: true }
+    );
+  };
   return (
     <div>
       <Head>
@@ -69,7 +70,7 @@ const ProductDetails = ({ object }) => {
       <h1>Title</h1>
       <div>{object.title}</div>
       <p>Description</p>
-      <Test/>
+      <Test />
       <button onClick={handleProductDetail}>Click Product Details</button>
     </div>
   );
@@ -78,6 +79,9 @@ const ProductDetails = ({ object }) => {
 // ngoài ra hàm này còn giúp check những params không tồn tại trên url sẽ được đẩy qua page 404
 // VD: user nhập bừa 1 params: local/dasdajdasd/dasda -> lúc này params không tồn tại hay không có page động nào tồn tại thì sẽ đẩy qua page 404
 export async function getStaticPaths() {
+  // trường hợp detail mới có getStaticProps và getStaticPaths, còn trường hợp getAll thì chỉ có getStaticProps mà thôi
+  // đúng là đây là component detail nhưng ở path này nếu muốn chỉ detail bao nhiêu obj thì chỗ params này mình để bấy nhiêu obj id để nó tạo ra bấy nhiêu file .html, .json
+  // VD: có 15 obj nhưng mình muốn xem detail 10 obj thì ở day mình để vào 10 obj id thì khi build sẽ ra 10 file .html, .json tương ứng với 10 id này
   // có api thì call api
   // const res = await fetch('https://.../posts');
   // const posts = await res.json();
@@ -122,6 +126,8 @@ export async function getStaticPaths() {
   };
 }
 export async function getStaticProps(context) {
+  // trường hợp detail mới có getStaticProps và getStaticPaths, còn trường hợp getAll thì chỉ có getStaticProps mà thôi
+  // getStaticProps khi npm run build chỉ tạo ra 1 file .html duy nhất, bên trong file này sẽ chứa array data (trường hợp không có getStaticPaths)
   // nếu chỗ này mình truyền vào 3 obj tương ứng với 3 id là: "1", "2", "3" thì thằng
   // getStaticProps sẽ chạy hay nói cách khác là được gọi 3 lần nhưng thằng getStaticPaths
   // này chỉ chạy hay được gọi 1 lần mà thôi. Tuỳ vào bao nhiêu obj thì getStaticProps sẽ được gọi và chạy bấy nhiêu lần

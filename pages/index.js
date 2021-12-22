@@ -5,10 +5,11 @@ import fs from "fs/promises";
 import { GetStaticProps, GetStaticPaths, GetStaticPropsContext } from "next";
 import Link from "next/link";
 import path from "path";
+// SSG + SSR sẽ được gọi lại mỗi khi user gửi request lên server (call API)
 // ISR = SSG + revalidate (trong hàm getStaticProps)
 // cả 3 thằng này: getStaticProps (SSG), getStaticPaths (SSG), getServerSideProps (ISR) khi npm run build đều sẽ tạo ra file .html
 // khi muốn 1 component không render ở phía server, chỉ về client hay chỉ muốn render ở phía trình duyệt (browser) mà thôi thì dùng cách này
-const Test = dynamic(() => import("./test"), {ssr: false})
+const Test = dynamic(() => import("./test"), { ssr: false });
 // những page data cứng dùng: SSG, private page (VD: admin) dùng CSR, những page data dynamic bị thay đổi bởi user thì dùng ISR
 // pre-rendering (VD: SSR (getServerSideProps), SSG (getStaticProps, getStaticPaths)): render sẵn file .html ở phía server -> khi user load lên là mình đã có sẵn file .html để show lên rồi
 // sau đó tải về file javascript và load thêm javascript -> sau đó nó sẽ thực hiện quá trình gọi là: hydration
@@ -38,14 +39,14 @@ export default function Home({ products }) {
       {
         pathname: "/products/1",
         query: {
-          page: "data ne"
+          page: "data ne",
         },
       },
       undefined,
       // khi muốn component này chỉ chạy ở phía client thôi, không muốn phải lên server chạy lại các thằng: getStaticProps, getStaticPaths, getServetSideProps nữa thì thêm thằng này vào
-      {shallow: true}
-    )
-  }
+      { shallow: true }
+    );
+  };
   return (
     <div className={styles.container}>
       <Head>
@@ -81,7 +82,7 @@ export default function Home({ products }) {
             );
           })}
       </main>
-      <Test/>
+      <Test />
       <button onClick={handleProductDetail}>Click Product Details</button>
       <footer className={styles.footer}>
         <a
@@ -100,6 +101,8 @@ export default function Home({ products }) {
 }
 
 export async function getStaticProps() {
+  // trường hợp detail mới có getStaticProps và getStaticPaths, còn trường hợp getAll thì chỉ có getStaticProps mà thôi
+  // getStaticProps khi npm run build chỉ tạo ra 1 file .html duy nhất, bên trong file này sẽ chứa array data (trường hợp không có getStaticPaths)
   // nếu chỗ này mình truyền vào 3 obj tương ứng với 3 id là: "1", "2", "3" thì thằng
   // getStaticProps sẽ chạy hay nói cách khác là được gọi 3 lần nhưng thằng getStaticPaths
   // này chỉ chạy hay được gọi 1 lần mà thôi. Tuỳ vào bao nhiêu obj thì getStaticProps sẽ được gọi và chạy bấy nhiêu lần

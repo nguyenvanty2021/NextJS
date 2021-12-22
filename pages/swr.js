@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+// SSG + SSR sẽ được gọi lại mỗi khi user gửi request lên server (call API)
 // ISR = SSG + revalidate (trong hàm getStaticProps)
 // những page data cứng dùng: SSG, private page (VD: admin) dùng CSR, những page data dynamic bị thay đổi bởi user thì dùng ISR
 // pre-rendering (VD: SSR (getServerSideProps), SSG (getStaticProps, getStaticPaths)): render sẵn file .html ở phía server -> khi user load lên là mình đã có sẵn file .html để show lên rồi

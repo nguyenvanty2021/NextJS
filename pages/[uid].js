@@ -1,4 +1,5 @@
 import Head from "next/head";
+// SSG + SSR sẽ được gọi lại mỗi khi user gửi request lên server (call API)
 // ISR = SSG + revalidate (trong hàm getStaticProps)
 // cả 3 thằng này: getStaticProps (SSG), getStaticPaths (SSG), getServerSideProps (ISR) khi npm run build đều sẽ tạo ra file .html
 // khi muốn 1 component không render ở phía server, chỉ về client hay chỉ muốn render ở phía trình duyệt (browser) mà thôi thì dùng cách này
@@ -87,7 +88,9 @@ const UserID = (props) => {
 // sẽ đi fetch data và tạo ra bấy nhiêu file .html -> nó sẽ luôn đảm bảo là dữ liệu của client luôn là dữ liệu mới
 // -> điều này cũng sẽ không tốt cho performance (cứ mỗi lần user gửi request server phải query lại database)
 export async function getServerSideProps(context) {
-  // getServerSideProps này cũng giống với getStaticProps đều có thể kết hợp với getStaticPaths được
+  // getServerSideProps cũng lấy params trên url được thông qua thuộc tính context
+  // const {params} = context;
+  // const id = params;
   // VD: khi call api mất 3s, cứ mỗi khi user gửi request hay reload (f5) dều phải mất 3s như vậy là không tốt
   // Chính vì vậy cache mới ra đời
   // ------------VD1: context.res.setHeader("Cache-Control", "s-maxage=5")------------

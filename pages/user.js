@@ -1,4 +1,5 @@
 import Head from "next/head";
+// SSG + SSR sẽ được gọi lại mỗi khi user gửi request lên server (call API)
 // ISR = SSG + revalidate (trong hàm getStaticProps)
 // những page data cứng dùng: SSG, private page (VD: admin) dùng CSR, những page data dynamic bị thay đổi bởi user thì dùng ISR
 // pre-rendering (VD: SSR (getServerSideProps), SSG (getStaticProps, getStaticPaths)): render sẵn file .html ở phía server -> khi user load lên là mình đã có sẵn file .html để show lên rồi
@@ -74,9 +75,7 @@ const User = ({ username }) => {
     </div>
   );
 };
-// thường dùng call API thay cho useEffect, tốt cho SEO
 // getServerSideProps nên được sử dụng để xây dựng ứng dụng đảm bảo dữ liệu được cập nhật liên tục
-// mà không cần phải refresh trang. Ví dụ dữ liệu chứng khoán, dữ liệu tình hình Covid,…
 // Nếu trang sử dụng Server-side rendering HTML sẽ được tạo khi có request. Sau mỗi request NextJS sẽ
 //  tự động gọi hàm getServerSideProps trong page.
 // hàm này có thể lấy được params trên url luôn
@@ -91,7 +90,9 @@ const User = ({ username }) => {
 // sẽ đi fetch data và tạo ra bấy nhiêu file .html -> nó sẽ luôn đảm bảo là dữ liệu của client luôn là dữ liệu mới
 // -> điều này cũng sẽ không tốt cho performance (cứ mỗi lần user gửi request server phải query lại database)
 export async function getServerSideProps(context) {
-  // getServerSideProps này cũng giống với getStaticProps đều có thể kết hợp với getStaticPaths được
+  // getServerSideProps cũng lấy params trên url được thông qua thuộc tính context
+  // const {params} = context;
+  // const id = params;
   // VD: khi call api mất 3s, cứ mỗi khi user gửi request hay reload (f5) dều phải mất 3s như vậy là không tốt
   // Chính vì vậy cache mới ra đời
   // ------------VD1: context.res.setHeader("Cache-Control", "s-maxage=5")------------
