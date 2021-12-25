@@ -1,4 +1,7 @@
 import Head from "next/head";
+// Trong thực tế VD: list product thì sẽ lấy data render từ hàm getServerSideProps (SSR) chứ không dùng ISR
+// Trong thực tế VD: trang detail vì hàm getServerSideProps cũng lấy dc params trên url nên nó có thể lấy ra id và truyền vào api để lấy ra object nên không cần dùng 2 hàm getStaticProps và getStaticPaths luôn
+// -> Hàm getServerSideProps là nhất
 // SSG + SSR sẽ được gọi lại mỗi khi user gửi request lên server (call API)
 // ISR = SSG + revalidate (trong hàm getStaticProps)
 // những page data cứng dùng: SSG, private page (VD: admin) dùng CSR, những page data dynamic bị thay đổi bởi user thì dùng ISR
@@ -9,7 +12,6 @@ import Head from "next/head";
 // Khác nhau giữa SSR và SSG là: SSR mỗi lần user gửi request or reload (browser) lên server thì server phải đi xử lý dữ liệu (query database)
 // sau đó server sẽ tạo ra 1 file .html và trả về cho user -> cứ mỗi lần user gửi request lên server phải đi xử lý và trả về 1 file .html mới cho user -> server sẽ làm việc rất nhiều -> theo mỗi request của client mà server sẽ trả về tương ứng bao nhiêu file .html -> VD: client gửi lên server 3 request thì server xử lý và trả về cho client 3 file .html -> tốt ở chỗ: luôn đảm bảo data của mình luôn là data mới chỉ có nhược điểm ở chỗ là: làm ảnh hưởng performance (user gửi request nó server cũng phải đi xử lý (query) và gửi lại dữ liệu mới (file .html mới) về cho client)
 // Còn thằng SSG: khi npm run build server sẽ tạo và trả về sẵn cho client tất cả các file .html trước, user cần file nào thì chỉ cần gửi query lên server, server sẽ trả về ngay lập tức cho user vì server đã tạo sẵn file .html rồi (respon file .html về cho client theo điều kiện VD như: id) hay nói cách khác VD: build ra 10 file .html thì dữ liệu trong file nó sẽ cố định và không bao giờ thay đổi -> dùng cho những data cứng, cố định không bị thay đổi khi user gửi request lên server
-
 // cả 3 thằng này: getStaticProps (SSG), getStaticPaths (SSG), getServerSideProps (ISR) khi npm run build đều sẽ tạo ra file .html
 // khi muốn 1 component không render ở phía server, chỉ về client hay chỉ muốn render ở phía trình duyệt (browser) mà thôi thì dùng cách này
 const Test = dynamic(() => import("./test"), { ssr: false });
